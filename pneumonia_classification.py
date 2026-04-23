@@ -89,7 +89,7 @@ with tf.device('/gpu:0'):
     ])
 
     model.compile(loss='sparse_categorical_crossentropy',
-                  optimizer=Adam(),
+                  optimizer=Adam(learning_rate=0.0001),
                   metrics=['accuracy'])
     
     earlystop_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',patience=5)
@@ -100,7 +100,7 @@ with tf.device('/gpu:0'):
             train_ds,
             batch_size=batch_size,
             validation_data=val_ds,
-            callbacks=[save_callback],
+            callbacks=[save_callback, earlystop_callback],
             epochs=epochs)
     else:
         model = tf.keras.models.load_model("pneumonia.keras")
