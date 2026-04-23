@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-batch_size = 12
+batch_size = 32
 num_classes = 3
 epochs = 8
 img_width = 128
