@@ -3,6 +3,7 @@
 from __future__ import print_function
 from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+from sklearn.metrics import classification_report
 
 import keras
 import tensorflow as tf
@@ -108,6 +109,14 @@ with tf.device('/gpu:0'):
     #if shuffle=True when creating the dataset, samples will be chosen randomly   
     score = model.evaluate(test_ds, batch_size=batch_size)
     print('Test accuracy:', score[1])
+    y_true = []
+    y_pred = []
+    for images, labels in test_ds:
+        preds = model.predict(images)
+        y_true.extend(labels.numpy())
+        y_pred.extend(np.argmax(preds, axis=1))
+    print('Classification Report:')
+    print(classification_report(y_true, y_pred, target_names=class_names))
 
     
     if fit:
