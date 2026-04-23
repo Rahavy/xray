@@ -59,9 +59,12 @@ with tf.device('/gpu:0'):
             plt.title(class_names[labels[i].numpy()])
             plt.axis("off")
     plt.show()
+    
+    data_augmentaion = tf.keras.Sequential([tf.keras.layers.RandomFlip("horizontal"), tf.keras.layers.RandomRotation(0.1), tf.keras.layers.RandomZoom(0.1),])
 
     #create model
     model = tf.keras.models.Sequential([
+        data_augmentaion,
         Rescaling(1.0/255),
         Conv2D(16, (3,3), activation = 'relu', input_shape = (img_height,img_width, img_channels)),
         MaxPooling2D(2,2),
