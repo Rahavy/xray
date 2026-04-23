@@ -1,6 +1,8 @@
 
 
 from __future__ import print_function
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
 import keras
 import tensorflow as tf
@@ -60,18 +62,23 @@ with tf.device('/gpu:0'):
             plt.axis("off")
     plt.show()
     
-    data_augmentaion = tf.keras.Sequential([tf.keras.layers.RandomFlip("horizontal"), tf.keras.layers.RandomRotation(0.1), tf.keras.layers.RandomZoom(0.1),])
+    data_augmentation = tf.keras.Sequential([tf.keras.layers.RandomFlip("horizontal"), tf.keras.layers.RandomRotation(0.1), tf.keras.layers.RandomZoom(0.1),])
 
+    base_model = MobileNetV2(input_shape=(img_height, img_width, img_channels), include_top=False, weights='imagenet')
+    base_model.trainable = False
     #create model
     model = tf.keras.models.Sequential([
-        data_augmentaion,
-        Rescaling(1.0/255),
-        Conv2D(16, (3,3), activation = 'relu', input_shape = (img_height,img_width, img_channels)),
-        MaxPooling2D(2,2),
-        Conv2D(32, (3,3), activation = 'relu'),
-        MaxPooling2D(2,2),
-        Conv2D(32, (3,3), activation = 'relu'),
-        MaxPooling2D(2,2),
+        data_augmentation,
+        tf.keras.layers.Lambda(preprocess_input),#preprocess the input data to be compatible with the MobileNetV2
+        base_model,
+       # Rescaling(1.0/255),
+        #Conv2D(16, (3,3), activation = 'relu', input_shape = (img_height,img_width, img_channels)),
+        #MaxPooling2D(2,2),
+        #Conv2D(32, (3,3), activation = 'relu'),
+        #MaxPooling2D(2,2),
+        #Conv2D(32, (3,3), activation = 'relu'),
+        #MaxPooling2D(2,2),
+        
         GlobalAveragePooling2D(), #reduce the number of parameters in the model and help to prevent overfitting
         Dense(128, activation = 'relu'),
         Dropout(0.5),
