@@ -6,7 +6,7 @@ import keras
 import tensorflow as tf
 from keras.datasets import mnist
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, Rescaling, BatchNormalization
+from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, Rescaling, BatchNormalization, GlobalAveragePooling2D
 from keras.optimizers import RMSprop,Adam
 import matplotlib.pyplot as plt
 import numpy as np
@@ -69,9 +69,12 @@ with tf.device('/gpu:0'):
         MaxPooling2D(2,2),
         Conv2D(32, (3,3), activation = 'relu'),
         MaxPooling2D(2,2),
-        Flatten(), # flatten multidimensional outputs into single dimension for input to dense fully connected layers
-        Dense(512, activation = 'relu'),
-        Dropout(0.2),
+        GlobalAveragePooling2D(), #reduce the number of parameters in the model and help to prevent overfitting
+        Dense(128, activation = 'relu'),
+        Dropout(0.5),
+        #Flatten(), # flatten multidimensional outputs into single dimension for input to dense fully connected layers
+        #Dense(512, activation = 'relu'),
+        #Dropout(0.2),
         Dense(num_classes, activation = 'softmax')
     ])
 
@@ -79,7 +82,7 @@ with tf.device('/gpu:0'):
                   optimizer=Adam(),
                   metrics=['accuracy'])
     
-    #earlystop_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',patience=5)
+    earlystop_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',patience=5)
     save_callback = tf.keras.callbacks.ModelCheckpoint("pneumonia.keras",save_freq='epoch',save_best_only=True)
 
     if fit:
